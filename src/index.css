@@ -7,7 +7,7 @@
 }
 
 body {
-  width: 100%;
+  width: 100vw;
   min-height: 100vh;
   color: #e1e1e1;
   background: #1e1e1e;
@@ -30,7 +30,7 @@ body {
 .container .valid-keys {
   font-size: 10rem;
   font-weight: bold;
-  min-width: 600px;
+  width: 600px;
   border-bottom: 2px solid #fff;
 }
 
