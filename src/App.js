@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import wordList from "./resources/words.json";
 
 const MAX_TYPED_KEYS = 30;
@@ -11,15 +10,15 @@ const getWord = () => {
 };
 
 const isValidKey = (key, word) => {
-  if(!word) return false;
+  if (!word) return false;
 
-  const result = word.split('').includes(key);
+  const result = word.split("").includes(key);
   return result;
-} 
+};
 
-const Word = ({word, validKeys}) => {
-  if(!word) return null;
-  const joinedKeys = validKeys.join('');
+const Word = ({ word, validKeys }) => {
+  if (!word) return null;
+  const joinedKeys = validKeys.join("");
   const matched = word.slice(0, joinedKeys.length);
   const remainder = word.slice(joinedKeys.length);
   return (
@@ -33,26 +32,43 @@ const Word = ({word, validKeys}) => {
 const App = () => {
   const [typedKeys, setTypedKeys] = useState([]);
   const [validKeys, setValidKeys] = useState([]);
+  const [completedWords, setCompletedWords] = useState([]);
   const [word, setWord] = useState("");
 
   useEffect(() => {
     setWord(getWord);
   }, []);
 
+  useEffect(() => {
+    const wordFromValidKeys = validKeys.join("").toLowerCase();
+    if (word && word === wordFromValidKeys) {
+      // adicionar o word ao completedWords
+      // limpar o array validKeys
+      // buscar uma nova palavra
+
+      let newWord = null;
+      do {
+        newWord = getWord();
+      } while (completedWords.includes(newWord));
+
+      setWord(newWord);
+      setValidKeys([]);
+      setCompletedWords((prev) => [...prev, word]);
+    }
+  }, [word, validKeys, completedWords]);
+
   const handleKeyDown = (e) => {
     e.preventDefault();
     const { key } = e;
     setTypedKeys((prev) => [...prev, key].slice(MAX_TYPED_KEYS * -1));
 
-    if(isValidKey(key,word)) {
-      setValidKeys((prev)=> {
+    if (isValidKey(key, word)) {
+      setValidKeys((prev) => {
         const isValidLength = prev.length <= word.length;
         const isNextChar = isValidLength && word[prev.length] === key;
         return isNextChar ? [...prev, key] : prev;
       });
     }
-
-    console.log("key", key);
   };
 
   return (
@@ -63,9 +79,7 @@ const App = () => {
       <div className="typed-keys">{typedKeys ? typedKeys.join(" ") : null}</div>
       <div className="completed-words">
         <ol>
-          <li>cidade</li>
-          <li>carro</li>
-          <li>profisional</li>
+          {completedWords.map((word) => (<li key={word}>{word}</li>))}
         </ol>
       </div>
     </div>
